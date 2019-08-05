@@ -3,7 +3,7 @@
 #'
 #' @importFrom jsonlite fromJSON
 #' @importFrom httr content GET
-#' @param x An optional value, either a \code{numeric} site ID or object of class \code{download}, \code{download_list} or \code{site}.
+#' @param x An optional value, either a \code{numeric} dataset ID or object of class \code{download}, \code{download_list} or \code{site}.
 #' @param datasettype A character string corresponding to one of the allowed dataset types in the Neotoma Database.  Allowed types include: \code{"geochronologic"}, \code{"loss-on-ignition"}, \code{"pollen"}, \code{"plant macrofossils"}, \code{"vertebrate fauna"}, \code{"mollusks"}, and \code{"pollen surface sample"}.  See note in Details delow.
 #' @param piid Numeric value for the Principle Investigator's ID number.
 #' @param altmin Numeric value indicating the minimum altitude for the site (can be used alone or with \code{altmax}).
@@ -41,16 +41,16 @@
 #' @examples \dontrun{
 #' # Search for sites with "Thuja" pollen that are older than 8kyr BP and
 #' # that are on the west coast of North America:
-#' t8kyr.datasets <- get_dataset(taxonname='Thuja*', 
-#'                               loc=c(-150, 20, -100, 60), 
+#' t8kyr.datasets <- get_dataset(taxonname='Thuja*',
+#'                               loc=c(-150, 20, -100, 60),
 #'                               ageyoung = 8000)
 #'
 #' # Search for vertebrate fossils in Canada (gpid: 756) within the last 2kyr.
 #' gpids <- get_table(table.name='GeoPoliticalUnits')
 #' canID <- gpids[which(gpids$GeoPoliticalName == 'Canada'),1]
 #'
-#' v2kyr.datasets <- get_dataset(datasettype='vertebrate fauna', 
-#'                               gpid=canID, 
+#' v2kyr.datasets <- get_dataset(datasettype='vertebrate fauna',
+#'                               gpid=canID,
 #'                               ageold = 2000)
 #' }
 #' @references
@@ -91,7 +91,7 @@ get_dataset.default <- function(x, datasettype, piid, altmin, altmax, loc, gpid,
   cl <- as.list(match.call())
   cl[[1]] <- NULL
   cl <- lapply(cl, eval, envir = parent.frame())
-  
+
   if ('x' %in% names(cl)) {
     names(cl)[which(names(cl) == 'x')] <- 'siteid'
   }
@@ -103,20 +103,20 @@ get_dataset.default <- function(x, datasettype, piid, altmin, altmax, loc, gpid,
   } else {
     cl <- error_test[[1]]
   }
-  
+
   cl <- lapply(cl, function(x){ if (length(x) > 1) {paste0(x, collapse = ',')} else {x} })
 
   neotoma_content <- httr::content(httr::GET(base.uri, query = cl), as = "text")
   if (identical(neotoma_content, "")) stop("")
   aa <- jsonlite::fromJSON(neotoma_content, simplifyVector = FALSE)
-  
+
   if (aa[[1]] == 0) {
     stop(paste('Server returned an error message:\n', aa[[2]]), call. = FALSE)
   }
   if (aa[[1]] == 1) {
     output <- aa[[2]]
-    
-    rep_NULL <- function(x) { 
+
+    rep_NULL <- function(x) {
       if (is.null(x)) {NA}
       else{
         if (class(x) == 'list') {
@@ -126,14 +126,14 @@ get_dataset.default <- function(x, datasettype, piid, altmin, altmax, loc, gpid,
         }
       }
     }
-    
+
     output <- lapply(output, function(x)rep_NULL(x))
-    
+
     if (length(output) == 0) {
       warning('The criteria used returned 0 sample sites. Returning NULL.')
       return(NULL)
     }
-    
+
     if (length(aa[[2]]) > 1) {
       message(paste('The API call was successful, you have returned ',
                     length(output), ' records.\n', sep = ''))
@@ -165,7 +165,7 @@ get_dataset.default <- function(x, datasettype, piid, altmin, altmax, loc, gpid,
           class(new.output$site.data) <- c('site', 'data.frame')
 
           if ('CollType' %in% names(x)) {x$CollUnitType <- x$CollType} # This is a fix for a very specific issue we were having.
-          
+
           new.output$dataset.meta <- data.frame(dataset.id = ifelse(class(x$DatasetID) == 'logical',
                                                                     NA, x$DatasetID),
                                                 dataset.name = ifelse(class(x$DatasetName) == 'logical',
@@ -177,7 +177,7 @@ get_dataset.default <- function(x, datasettype, piid, altmin, altmax, loc, gpid,
                                                 dataset.type = ifelse(class(x$DatasetType) == 'logical',
                                                                       NA, x$DatasetType),
                                                 stringsAsFactors = FALSE)
-          if (class(x$DatasetPIs) == 'logical') { 
+          if (class(x$DatasetPIs) == 'logical') {
             new.output$pi.data <- NA
           } else {
             new.output$pi.data <- do.call(rbind.data.frame, x$DatasetPIs)
@@ -200,10 +200,10 @@ get_dataset.default <- function(x, datasettype, piid, altmin, altmax, loc, gpid,
           new.output})
 
   }
-  
-  names(new.output) <- sapply(lapply(new.output, '[[', 'dataset.meta'), 
+
+  names(new.output) <- sapply(lapply(new.output, '[[', 'dataset.meta'),
                               '[[', 'dataset.id')
-  
+
   class(new.output) <- c('dataset_list', 'list')
 
   new.output
@@ -220,7 +220,7 @@ get_dataset.default <- function(x, datasettype, piid, altmin, altmax, loc, gpid,
 #' @export
 get_dataset.site <- function(x, ...) {
 
-  rep_NULL <- function(x) { 
+  rep_NULL <- function(x) {
     if (is.null(x) | length(x) == 0) {NA}
     else{
       if (class(x) == 'list') {
@@ -230,13 +230,13 @@ get_dataset.site <- function(x, ...) {
       }
     }
   }
-  
+
   pull_site <- function(siteid, ...) {
-    
+
     cl <- as.list(match.call())
     cl[[1]] <- NULL
     cl <- lapply(cl, eval, envir = parent.frame())
-    
+
     #  Pass the parameters to param_check to make sure everything is kosher.
     error_test <- param_check(cl)
     if (error_test[[2]]$flag == 1) {
@@ -244,13 +244,13 @@ get_dataset.site <- function(x, ...) {
     } else {
       cl <- error_test[[1]]
     }
-    
+
     cl <- lapply(cl, function(x){ if (length(x) > 1) {paste0(x, collapse = ',')} else {x} })
-    
+
     base.uri <- 'http://api.neotomadb.org/v1/data/datasets/?siteid='
-    
+
     neotoma_content <- httr::content(httr::GET(base.uri, query = cl), as = "text")
-    
+
     if (identical(neotoma_content, "")) stop("")
     aa <- jsonlite::fromJSON(neotoma_content, simplifyVector = FALSE)
 
@@ -260,19 +260,19 @@ get_dataset.site <- function(x, ...) {
     if (aa[[1]] == 1) {
       output <- aa[[2]]
       # replace NULL values:
-      
+
     }
 
     if (length(output) == 0) {
       warning('The criteria used returned 0 sample sites. Returning NULL.')
       return(NULL)
     }
-    
+
     new.output <- lapply(output, function(x) {
       new.output <- list()
-      
+
       x <- rep_NULL(x)
-      
+
       new.output$site.data <- data.frame(site.id = x$Site$SiteID,
                                          site.name = x$Site$SiteName,
                                          long = mean(unlist(x$Site[c('LongitudeWest', 'LongitudeEast')]),
@@ -285,7 +285,7 @@ get_dataset.site <- function(x, ...) {
                                          lat.acc = abs(x$Site$LatitudeNorth - x$Site$LatitudeSouth),
                                          row.names = x$Site$SiteName,
                                          stringsAsFactors = FALSE)
-      
+
       new.output$dataset.meta <- data.frame(dataset.id = ifelse(class(x$DatasetID) == 'logical',
                                                                 NA, x$DatasetID),
                                             dataset.name = ifelse(class(x$DatasetName) == 'logical',
@@ -297,13 +297,13 @@ get_dataset.site <- function(x, ...) {
                                             dataset.type = ifelse(class(x$DatasetType) == 'logical',
                                                                   NA, x$DatasetType),
                                             stringsAsFactors = FALSE)
-      if (class(x$DatasetPIs) == 'logical') { 
+      if (class(x$DatasetPIs) == 'logical') {
         new.output$pi.data <- NA
       } else {
         new.output$pi.data <- do.call(rbind.data.frame, x$DatasetPIs)
         rownames(new.output$pi.data) <- NULL
       }
-      
+
       sub.test <- try(do.call(rbind.data.frame, x$SubDates), silent = TRUE)
 
       if (length(sub.test) > 0 & !"try-error" %in% class(sub.test)) {
@@ -317,16 +317,16 @@ get_dataset.site <- function(x, ...) {
       new.output$access.date = Sys.time()
 
       class(new.output) <- c('dataset', 'list')
-      
+
       new.output})
 
     new.output
   }
-  
+
   new.output <- unlist(lapply(x$site.id, function(x){pull_site(siteid = x, ...)}), recursive = FALSE)
-  
+
   class(new.output) <- c('dataset_list', 'list')
-  
+
   new.output
 
 }
@@ -364,7 +364,7 @@ get_dataset.download_list <- function(x, ...) {
     dataset })
 
   names(output) <- sapply(lapply(output, '[[', 'dataset.meta'), '[[', 'dataset.id')
-  
+
   class(output) <- c('dataset_list', 'list')
 
   output
@@ -399,12 +399,12 @@ get_dataset.geochronologic_list <- function(x, ...) {
 #' @param ... objects passed from the generic.  Not used in the call.
 #' @export
 get_dataset.numeric <- function(x = NULL, ...) {
-  
+
   if (is.null(x)) {
     return(get_dataset.default(...))
   }
-  
-  rep_NULL <- function(x) { 
+
+  rep_NULL <- function(x) {
     if (is.null(x) | length(x) == 0) {NA}
     else{
       if (class(x) == 'list') {
@@ -414,37 +414,37 @@ get_dataset.numeric <- function(x = NULL, ...) {
       }
     }
   }
-  
+
   pull_datasets <- function(x) {
 
     #  Pass the parameters to param_check to make sure everything is kosher.
 
     base.uri <- paste0('http://api.neotomadb.org/v1/data/datasets/', x)
-    
+
     neotoma_content <- httr::content(httr::GET(base.uri), as = "text")
-    
+
     if (identical(neotoma_content, "")) stop("")
     aa <- jsonlite::fromJSON(neotoma_content, simplifyVector = FALSE)
-    
+
     if (aa[[1]] == 0) {
       stop(paste('Server returned an error message:\n', aa[[2]]), call. = FALSE)
     }
     if (aa[[1]] == 1) {
       output <- aa[[2]]
       # replace NULL values:
-      
+
     }
-    
+
     if (length(output) == 0) {
       warning('The criteria used returned 0 sample sites. Returning NULL.')
       return(NULL)
     }
-    
+
     new.output <- lapply(output, function(x) {
       new.output <- list()
-      
+
       x <- rep_NULL(x)
-      
+
       new.output$site.data <- data.frame(site.id = x$Site$SiteID,
                                          site.name = x$Site$SiteName,
                                          long = mean(unlist(x$Site[c('LongitudeWest', 'LongitudeEast')]),
@@ -457,7 +457,7 @@ get_dataset.numeric <- function(x = NULL, ...) {
                                          lat.acc = abs(x$Site$LatitudeNorth - x$Site$LatitudeSouth),
                                          row.names = x$Site$SiteName,
                                          stringsAsFactors = FALSE)
-      
+
       new.output$dataset.meta <- data.frame(dataset.id = ifelse(class(x$DatasetID) == 'logical',
                                                                 NA, x$DatasetID),
                                             dataset.name = ifelse(class(x$DatasetName) == 'logical',
@@ -469,34 +469,34 @@ get_dataset.numeric <- function(x = NULL, ...) {
                                             dataset.type = ifelse(class(x$DatasetType) == 'logical',
                                                                   NA, x$DatasetType),
                                             stringsAsFactors = FALSE)
-      if (class(x$DatasetPIs) == 'logical') { 
+      if (class(x$DatasetPIs) == 'logical') {
         new.output$pi.data <- NA
       } else {
         new.output$pi.data <- do.call(rbind.data.frame, x$DatasetPIs)
         rownames(new.output$pi.data) <- NULL
       }
-      
+
       sub.test <- try(do.call(rbind.data.frame, x$SubDates), silent = TRUE)
-      
+
       if (length(sub.test) > 0 & !"try-error" %in% class(sub.test)) {
         colnames(sub.test) <- c("SubmissionDate",  "SubmissionType")
       } else {
         sub.test <- data.frame(SubmissionDate = NA, SubmissionType = NA)
       }
-      
+
       new.output$submission <- sub.test
-      
+
       new.output$access.date = Sys.time()
-      
+
       class(new.output) <- c('dataset', 'list')
-      
+
       new.output})
-    
+
     new.output
   }
-  
+
   new.output <- unlist(lapply(x, function(x){pull_datasets(x)}), recursive = FALSE)
-  
+
   class(new.output) <- c('dataset_list', 'list')
 
   new.output

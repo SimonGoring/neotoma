@@ -8,7 +8,7 @@ get_dataset(x, datasettype, piid, altmin, altmax, loc, gpid, taxonids,
   taxonname, ageold, ageyoung, ageof, subdate)
 }
 \arguments{
-\item{x}{An optional value, either a \code{numeric} site ID or object of class \code{download}, \code{download_list} or \code{site}.}
+\item{x}{An optional value, either a \code{numeric} dataset ID or object of class \code{download}, \code{download_list} or \code{site}.}
 
 \item{datasettype}{A character string corresponding to one of the allowed dataset types in the Neotoma Database.  Allowed types include: \code{"geochronologic"}, \code{"loss-on-ignition"}, \code{"pollen"}, \code{"plant macrofossils"}, \code{"vertebrate fauna"}, \code{"mollusks"}, and \code{"pollen surface sample"}.  See note in Details delow.}
 
@@ -22,7 +22,7 @@ get_dataset(x, datasettype, piid, altmin, altmax, loc, gpid, taxonids,
 
 \item{gpid}{A character string or numeric value, must correspond to a valid geopolitical identity in the Neotoma Database.  Use get.tables('GeoPoliticalUnits') for a list of acceptable values, or link here: \url{http://api.neotomadb.org/apdx/geopol.htm}}
 
-\item{taxonids}{A numeric identifier for the taxon.  See \code{\link{get_table}} and use \code{get_tables('Taxa')} for a list of acceptable values.}
+\item{taxonids}{A numeric identifier for the taxon.  See \code{\link{get_table}} and use \code{get_table('Taxa')} for a list of acceptable values.}
 
 \item{taxonname}{A character string corresponding to a valid taxon identity in the Neotoma Database.  See \code{\link{get_table}} and use \code{get_table('Taxa')} for a list of acceptable values.}
 
@@ -58,22 +58,22 @@ More details on the use of these parameters can be obtained from
 A function to access the Neotoma API and return datasets corresponding to the parameters defined by the user.
 }
 \details{
-With regards to \code{datasettypes}, because Neotoma is a "living" database, and new dataset types are being added in an ongoing manner as new research disciplines use the database, you can use \code{get_tables("datasettypes")} to see the full list of available dataset types in the database.
+With regards to \code{datasettypes}, because Neotoma is a "living" database, and new dataset types are being added in an ongoing manner as new research disciplines use the database, you can use \code{get_table("datasettypes")} to see the full list of available dataset types in the database.
 }
 \examples{
 \dontrun{
 # Search for sites with "Thuja" pollen that are older than 8kyr BP and
 # that are on the west coast of North America:
-t8kyr.datasets <- get_dataset(taxonname='Thuja*', 
-                              loc=c(-150, 20, -100, 60), 
+t8kyr.datasets <- get_dataset(taxonname='Thuja*',
+                              loc=c(-150, 20, -100, 60),
                               ageyoung = 8000)
 
 # Search for vertebrate fossils in Canada (gpid: 756) within the last 2kyr.
 gpids <- get_table(table.name='GeoPoliticalUnits')
 canID <- gpids[which(gpids$GeoPoliticalName == 'Canada'),1]
 
-v2kyr.datasets <- get_dataset(datasettype='vertebrate fauna', 
-                              gpid=canID, 
+v2kyr.datasets <- get_dataset(datasettype='vertebrate fauna',
+                              gpid=canID,
                               ageold = 2000)
 }
 }

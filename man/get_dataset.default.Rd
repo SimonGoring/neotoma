@@ -10,7 +10,7 @@
 \arguments{
 \item{x}{A numeric value corresponding to the site ID.}
 
-\item{datasettype}{A character string corresponding to one of the allowed dataset types in the Neotoma Database.  Allowed types include: \code{"geochronologic"}, \code{"loss-on-ignition"}, \code{"pollen"}, \code{"plant macrofossils"}, \code{"vertebrate fauna"}, \code{"mollusks"}, and \code{"pollen surface sample"}.}
+\item{datasettype}{A character string corresponding to one of the allowed dataset types in the Neotoma Database.  You can find the full list of allowed datasettypes using: \code{get_table("datasettypes")}.}
 
 \item{piid}{Numeric value for the Principle Investigator's ID number.}
 
@@ -22,7 +22,7 @@
 
 \item{gpid}{A character string or numeric value, must correspond to a valid geopolitical identity in the Neotoma Database.  Use get.tables('GeoPoliticalUnits') for a list of acceptable values, or link here: \url{http://api.neotomadb.org/apdx/geopol.htm}}
 
-\item{taxonids}{A numeric identifier for the taxon.  See \code{\link{get_table}} and use \code{get_tables('Taxa')} for a list of acceptable values.}
+\item{taxonids}{A numeric identifier for the taxon.  See \code{\link{get_table}} and use \code{get_table('Taxa')} for a list of acceptable values.}
 
 \item{taxonname}{A character string corresponding to a valid taxon identity in the Neotoma Database.  See \code{\link{get_table}} and use \code{get_table('Taxa')} for a list of acceptable values.}
 
