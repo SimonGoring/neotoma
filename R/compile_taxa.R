@@ -12,6 +12,7 @@
 #' }
 #'
 #' @importFrom stats aggregate
+#' @importFrom utils data
 #' @param object A pollen object returned by \code{\link{get_download}}.
 #' @param alt.table A user provided table formatted with at least two columns, one called 'taxon' and the other named as in \code{list.name}.
 #' @param list.name The taxon compilation list, one of a set of lists from the literature (e.g., \code{"P25"}, \code{"WhitmoreFull"}).  More detail in section Details.
