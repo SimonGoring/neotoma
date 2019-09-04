@@ -1,6 +1,8 @@
 #' @title Internal function to check passed parameters.
 #'
 #' @description Functions \code{\link{get_site}}, \code{\link{get_dataset}} and others pass parameters to \code{param_check}, which tells them if there's a problem.
+#' @importFrom stringr str_detect
+#' @importFrom dplyr filter
 #' @param cl Contact ID is a numerical value associated with the Neotoma
 #'    Contact table's numerical Contact ID.
 #' @author Simon J. Goring \email{simon.j.goring@@gmail.com}
@@ -128,12 +130,12 @@ param_check <- function(cl) {
       places <- paste0("^(", paste0(cl$gpid, collapse = "|"), ")$")
       
       gp_test <- gp.table %>% 
-        filter(stringr::str_detect(gp.table$GeoPoliticalUnit, good_gp) &
+        dplyr::filter(stringr::str_detect(gp.table$GeoPoliticalUnit, good_gp) &
                stringr::str_detect(gp.table$GeoPoliticalName, places))
       
       if (nrow(gp_test) == 0) {
         error$flag <- 1
-        message <- paste0('Cannot find a match for the gpid provided. Missing: ', cl$gpid[which(is.na(gprow))])
+        message <- paste0('Cannot find a match for the gpid provided.')
         error$message[[length(error$message) + 1]] <- message
       }
       if (nrow(gp_test) > length(cl$gpid)) {
