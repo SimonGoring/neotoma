@@ -123,13 +123,25 @@ param_check <- function(cl) {
   #  Test the geographic identification against the Geopolitical name table.
   if ('gpid' %in% names(cl)) {
     if (is.character(cl$gpid)) {
-      gprow <- match(x = cl$gpid, table = gp.table$GeoPoliticalName)
-      if (any(is.na(gprow))) {
+      
+      good_gp <- "province|state|territor|country"
+      places <- paste0("^(", paste0(cl$gpid, collapse = "|"), ")$")
+      
+      gp_test <- gp.table %>% 
+        filter(stringr::str_detect(gp.table$GeoPoliticalUnit, good_gp) &
+               stringr::str_detect(gp.table$GeoPoliticalName, places))
+      
+      if (nrow(gp_test) == 0) {
         error$flag <- 1
         message <- paste0('Cannot find a match for the gpid provided. Missing: ', cl$gpid[which(is.na(gprow))])
         error$message[[length(error$message) + 1]] <- message
       }
-      cl$gpid <- gp.table$GeoPoliticalID[gprow]
+      if (nrow(gp_test) > length(cl$gpid)) {
+        error$flag <- 1
+        message <- paste0(length(cl$gpid), " geopolitical name(s) were passed, but Neotoma matches ", nrow(gp_test), " locations.  Please check location names against the neotoma GeoPoliticalUnits table using get_table('GeoPoliticalUnits')")
+        error$message[[length(error$message) + 1]] <- message
+      }
+      cl$gpid <- gp_test$GeoPoliticalID
     } else {
       if (!is.numeric(cl$gpid)) {
         error$flag <- 1
