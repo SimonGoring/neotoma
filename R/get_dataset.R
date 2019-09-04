@@ -107,6 +107,7 @@ get_dataset.default <- function(x, datasettype, piid, altmin, altmax, loc, gpid,
   cl <- lapply(cl, function(x){ if (length(x) > 1) {paste0(x, collapse = ',')} else {x} })
 
   neotoma_content <- httr::content(httr::GET(base.uri, query = cl), as = "text")
+  
   if (identical(neotoma_content, "")) stop("")
   aa <- jsonlite::fromJSON(neotoma_content, simplifyVector = FALSE)
 
