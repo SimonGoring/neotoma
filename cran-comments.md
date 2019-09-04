@@ -4,7 +4,7 @@
 +   [Appveyor](https://ci.appveyor.com/project/sckott/neotoma/build/1.0.1397) tests are passing.
 
 ## R CMD check results:
-+   R CMD check succeeded (0 errors, warnings, notes)
++   R CMD check succeeded (0 errors, warnings) - 1 note, UTF-8 encoding for scientific names in `pollen.equiv`.
 +   Travis gives no notes.
 +   Appveyor passes
 

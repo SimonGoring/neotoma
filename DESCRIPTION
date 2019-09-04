@@ -32,7 +32,8 @@ Imports:
     leaflet,
     dplyr,
     sf,
-    assertthat
+    assertthat,
+    stringr
 Suggests:
     testthat,
     knitr
