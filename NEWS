@@ -1,3 +1,8 @@
+neotoma 1.7.6
+====================
+o Moved the `pollen.equiv` pollen equivalence file into an rda file, can be accessed using `data("pollen.equiv")`
+o Changed the way that geographic identifiers are used and converted in `param_check` removes a bug where place names that are repeated were getting flagged multiple times.
+
 neotoma 1.7.5
 ====================
 o Introduction of the `sf` package into the package.  Using `sf` to buffer and transform coordinates to allow a proper buffer and bounding box to be generated to identify the *n* closest sites to a point of interest.
