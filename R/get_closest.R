@@ -36,7 +36,7 @@ get_closest <- function(x, n, buffer, ...) {
 }
 
 #' @export
-get_closest.default <- function(x, n, buffer, ...) {
+get_closest.default <- function(x, n = 5, buffer = 100, ...) {
   
   assertthat::assert_that(length(x) == 2, 
                           msg = "You must pass an x, y object (e.g., c(10, -20)).")
@@ -45,6 +45,10 @@ get_closest.default <- function(x, n, buffer, ...) {
   assertthat::assert_that(x[2] >= -90 & x[2] <= 90, 
                           msg = "You must pass an array of long/lat with lat values from -90 - 90.")
 
+  assertthat::assert_that(buffer < (40075 / 2),
+                          msg = paste0("The circumference of the earth is 40000km. You provided a buffer diameter of ", 
+                                       buffer, 
+                                       "km.  Maybe you entered the value in meters?"))
   utm_w <- seq(-180, 180, by = 6)
   
   proj <- paste0("+proj=utm +zone=",findInterval(x[1], utm_w))
@@ -75,24 +79,25 @@ get_closest.default <- function(x, n, buffer, ...) {
     R <- 6371000 # Earth mean radius [km]
     d <- acos(sin(deg2rad(lat1))*sin(deg2rad(lat2)) + cos(deg2rad(lat1)) * 
                 cos(deg2rad(lat2)) * cos(deg2rad(long2) - deg2rad(long1))) * R
-    return(d) # Distance in km
+    return(d) # Distance in m
   }
   
   dists <- sapply(1:nrow(sites), 
-                  function(i) gcd.slc(x[1], x[2], sites$long[i], sites$lat[i]))
+                  function(i) gcd.slc(x[1], x[2], sites$long[i], sites$lat[i]) / 1000)
   
-  if(all(dists > buffer)) {
-    message(paste0("There are no sites within ", buffer, "m of coordinates [", x[1], ", ", x[2], "]"))
+  if (all(dists > buffer)) {
+    message(paste0("There are no sites within ", buffer, "km of coordinates [", x[1], ", ", x[2], "]"))
     return(NULL)
   }
   
-  message("The API call was successful, you have returned ", sum(dists < buffer, na.rm = TRUE),
-          " records.")
+  message(paste0("The API call returns ", sum(dists < buffer, na.rm = TRUE),
+          " records within the ", buffer, "km buffer."))
   
   if (length(which(dists < buffer)) <= n) {
     data_out <- buff_sets[which(dists < buffer)]
   } else {
     set <- which((rank(dists, ties.method = 'min') <= n) & (dists < buffer))
+    message("Returning the closest ", n, " records.")
     data_out <- buff_sets[set]
   }
   

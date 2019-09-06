@@ -8,13 +8,18 @@
  #   library("purrr")
  # 
  #  context('Get closest is working')
- #  test_that('the right number of samples are returned',
+ #  test_that('You can't make a buffer around the world!,
  #            {
- #              cl_smp <- get_closest(x = c(-89.4012, 43.0731), n = 5, buffer = 50000, datasettype = "pollen")
- #              testthat::expect_is(cl_smp, 'dataset_list')
- #              testthat::expect_equal(length(cl_smp), 5)
- #              testthat::expect_identical(unique(sapply(cl_smp, function(x) x$dataset.meta$dataset.type)), "pollen")
+ #              testthat::expect_error(get_closest(x = c(-89.4012, 43.0731), n = 100, buffer = 50000, datasettype = "pollen"))
  #            })
+ 
+#   test_that('the right number of samples are returned',
+#            {
+#              cl_smp <- get_closest(x = c(-89.4012, 43.0731), n = 5, buffer = 500, datasettype = "pollen")
+#              testthat::expect_is(cl_smp, 'dataset_list')
+#              testthat::expect_equal(length(cl_smp), 5)
+#              testthat::expect_identical(unique(sapply(cl_smp, function(x) x$dataset.meta$dataset.type)), "pollen")
+#            })
  # 
  #  context('Testing print methods')
  # 
