@@ -1,4 +1,4 @@
-neotoma
+`neotoma`
 ========
 
 [![Build Status](https://api.travis-ci.org/ropensci/neotoma.png)](https://travis-ci.org/ropensci/neotoma)
@@ -21,7 +21,7 @@ For ongoing news, issues or information please join the [Neotoma Slack server](h
 
 *We welcome contributions from any individual, whether code, documentation, or issue tracking.  All participants are expected to follow the [code of conduct](https://github.com/ROpensci/neotoma/blob/master/code_of_conduct.md) for this project.*
 
-+ [Simon Goring](http://downwithtime.wordpress.com) - University of Wisconsin-Madison, Department of Geography
++ [Simon Goring](http://goring.org) - University of Wisconsin-Madison, Department of Geography
 
 ### Contributors
 + [Gavin Simpson](http://www.fromthebottomoftheheap.net/) - University of Regina, Department of Biology
@@ -63,6 +63,8 @@ More functions are available through the package help.  These represent the core
 + `get_chroncontrol` - Get chronological information used to build the age-depth model for the record. [API](http://api.neotomadb.org/doc/resources/chroncontrol)
 
 ### Recent Changes
++1.7.6: Moved the `pollen.equiv` pollen equivalence file into an rda file, can be accessed using `data("pollen.equiv")`; Changed the way that geographic identifiers are used and converted in `param_check` removes a bug where place names that are repeated were getting flagged multiple times.
++ 1.7.5: Introduction of the `sf` package into the package.  Using `sf` to buffer and transform coordinates to allow a proper buffer and bounding box to be generated to identify the *n* closest sites to a point of interest; Added a warning to `plot_leaflet()` for the default response; Updated `param_check()` to include new dataset types within the database.
 + 1.7.4: Bug fix: `get_dataset(gpid=123)` was returning an error, fix corrects the error to allow unassigned `x` variables.  Updated the allowable dataset types for searching to reflect the larger set of dataset types within Neotoma.
 + 1.7.3: Added numeric/integer methods to the `get_site()` and `get_dataset()` functions so that a vector of dataset or siteids can be passed to improve more general workflow methods.
 + 1.7.2: Bugfixes, added the `taxa()` function to easily extract taxa from one or multiple download objects.
